@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 // Import Link for internal navigation and useNavigate for programmatic navigation
 import { Link, useNavigate } from 'react-router-dom';
 // Import icons from the 'react-icons/fi' (Feather Icons) set
 // Make sure you have run 'npm install react-icons' in your project terminal
 import { FiDollarSign, FiEye, FiEyeOff } from 'react-icons/fi';
+import { serverDataContext } from '../../Context/ServerContext';
+import axios from 'axios';
+import toast from 'react-hot-toast'; // Import toast for notifications
 
 // --- UI Components ---
 
 const LoginForm = () => {
     // State to manage form inputs and password visibility
+    const { serverUrl } = useContext(serverDataContext);
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -31,7 +35,7 @@ const LoginForm = () => {
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent page reload
         
         // Final validation check on submit
@@ -46,6 +50,18 @@ const LoginForm = () => {
         // If validation passes, you can proceed with your authentication logic
         // For example, navigate to the dashboard on successful login
         // navigate('/'); 
+        try{
+            const response = await axios.post(`${serverUrl}/api/user/login`, {
+                email,
+                password
+            } , {withCredentials: true  });
+            console.log("Login Successful:", response.data);
+            navigate('/');
+            toast.success("Login Successful!");
+        }catch(error) {
+            console.error("Login failed:", error.response?.data || error.message);
+            toast.error("Login failed");
+        }
     };
 
     return (

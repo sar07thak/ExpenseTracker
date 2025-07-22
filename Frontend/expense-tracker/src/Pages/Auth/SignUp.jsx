@@ -1,174 +1,149 @@
-import React, { useState } from 'react';
-// Import Link for internal navigation and useNavigate for programmatic navigation
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// Import icons from the 'react-icons/fi' (Feather Icons) set
-// Make sure you have run 'npm install react-icons' in your project terminal
 import { FiDollarSign, FiEye, FiEyeOff, FiCamera, FiTrash } from 'react-icons/fi';
-// Import the default user image. Make sure the path is correct for your project structure.
 import user from "../../assets/user.jpeg";
+import { serverDataContext } from '../../Context/ServerContext';
+import axios from "axios";
+import toast from 'react-hot-toast';
+import imageCompression from 'browser-image-compression';
 
-// --- UI Components ---
 
 const SignUpForm = () => {
-    // State to manage form inputs, password visibility, and avatar
+    const { serverUrl } = useContext(serverDataContext);
     const navigate = useNavigate();
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [formError, setFormError] = useState(""); // State for form errors
-    const [avatar, setAvatar] = useState(null); // State for the image file
-    const [avatarPreview, setAvatarPreview] = useState(null); // State for the image preview URL
+    const [formError, setFormError] = useState("");
+    const [avatar, setAvatar] = useState(null);
+    const [avatarPreview, setAvatarPreview] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Regular expression for strong password validation
-    const strongPasswordRegex = new RegExp(
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
-    );
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
+            setFormError("Password must be 8+ characters and include an uppercase letter, a number, and a special character.");
+            return;
+        }
+        setFormError("");
+        setIsLoading(true);
 
-    const handlePasswordChange = (e) => {
-        const newPassword = e.target.value;
-        setPassword(newPassword);
-        if (formError && strongPasswordRegex.test(newPassword)) {
-            setFormError("");
+        const formData = new FormData();
+        formData.append('fullName', fullName);
+        formData.append('email', email);
+        formData.append('password', password);
+
+        try {
+            if (avatar) {
+                formData.append('avatar', avatar);
+            } else {
+                const response = await fetch(user);
+                const blob = await response.blob();
+                const defaultFile = new File([blob], 'default-avatar.jpeg', { type: blob.type });
+                formData.append('avatar', defaultFile);
+            }
+
+            const response = await axios.post(`${serverUrl}/api/user/signup`, formData, {
+                 withCredentials: true
+            });
+
+            console.log("Signup Successful:", response.data);
+            toast.success("Account created successfully! Redirecting...");
+            navigate('/');
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "An unknown error occurred.";
+            console.error("Signup failed:", errorMessage);
+            toast.error(`Signup failed: ${errorMessage}`);
+        } finally {
+            setIsLoading(false);
         }
     };
     
-    const handleAvatarChange = (e) => {
+    const handleAvatarChange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setAvatar(file);
-            setAvatarPreview(URL.createObjectURL(file));
+        if (!file) return;
+
+        const options = { maxSizeMB: 1, maxWidthOrHeight: 800, useWebWorker: true };
+        toast.loading('Compressing image...');
+        try {
+          const compressedFile = await imageCompression(file, options);
+          setAvatar(compressedFile); 
+          setAvatarPreview(URL.createObjectURL(compressedFile));
+          toast.dismiss();
+          toast.success('Image ready!');
+        } catch (error) {
+          console.error("Image compression error:", error);
+          toast.dismiss();
+          toast.error("Failed to process image.");
         }
     };
 
     const handleRemoveAvatar = (e) => {
-        e.preventDefault(); // Stop any other click events
+        e.preventDefault();
         setAvatar(null);
         setAvatarPreview(null);
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault(); // Prevent page reload
-        
-        if (!strongPasswordRegex.test(password)) {
-            setFormError("Password must be 8+ characters and include an uppercase letter, a number, and a special character (@$!%*?&).");
-            return;
-        }
-
-        setFormError(""); 
-        console.log('Signing up with:', { fullName, email, password, avatar });
-        // Add your user creation logic here, including uploading the avatar file.
-        // For example, you would use FormData to send the file to your server.
-        // navigate('/login'); 
+        document.getElementById('avatarInput').value = "";
     };
 
     return (
-        <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-16">
+        <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12">
             <div className="w-full max-w-md">
-                <h1 className="text-2xl font-bold mb-8 self-start">Expense Tracker</h1>
+                <h1 className="text-2xl font-bold mb-8 self-start text-gray-800">Expense Tracker</h1>
                 
-                <div className="mb-6">
-                    <h2 className="text-3xl font-bold">Create an Account</h2>
-                    <p className="text-gray-500">Join us today by entering your details below.</p>
+                <div className="mb-6 text-left">
+                    <h2 className="text-3xl font-bold text-gray-900">Create an Account</h2>
+                    <p className="text-gray-500 mt-2">Join us today by entering your details below.</p>
                 </div>
 
-                {/* --- Image Upload Section --- */}
-                <div className="mb-6">
-                    <div className="relative w-28 h-28 block mx-auto">
-                        <label htmlFor="avatarInput" className="cursor-pointer group w-full h-full">
-                            <div className="w-full h-full rounded-full flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 group-hover:border-purple-400 transition-all overflow-hidden">
-                                {avatarPreview ? (
-                                    <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
-                                ) : (
-                                    <img src={user} alt="Default Avatar" className="w-full h-full object-cover" />
-                                )}
-                            </div>
+                <div className="mb-8">
+                    <div className="relative w-24 h-24 mx-auto">
+                        <label htmlFor="avatarInput" className="cursor-pointer group">
+                            <img 
+                                src={avatarPreview || user} 
+                                alt="Avatar" 
+                                className="w-full h-full rounded-full object-cover border-2 border-gray-200 group-hover:border-purple-400 transition"
+                            />
                         </label>
-                        <input
-                            type="file"
-                            id="avatarInput"
-                            name="avatar"
-                            accept="image/png, image/jpeg, image/jpg"
-                            onChange={handleAvatarChange}
-                            className="hidden"
-                        />
-                        {/* Conditionally render Camera or Trash icon with appropriate styles */}
-                        <div className={`absolute bottom-0 right-0 rounded-2xl p-2 transition-all shadow-md ${avatarPreview ? 'bg-red-600 hover:bg-red-700' : 'bg-purple-600 hover:bg-purple-700'}`}>
-                            {avatarPreview ? (
-                                <button type="button" onClick={handleRemoveAvatar} title="Remove image" >
-                                    <FiTrash size={16} className="text-white" />
-                                </button>
-                            ) : (
-                                <label htmlFor="avatarInput" className="cursor-pointer">
-                                    <FiCamera size={16} className="text-white" />
-                                </label>
-                            )}
-                        </div>
+                        <input type="file" id="avatarInput" onChange={handleAvatarChange} className="hidden" accept="image/*" />
+                        <label 
+                            htmlFor="avatarInput" 
+                            className="absolute bottom-0 right-0 bg-purple-600 rounded-full p-2 cursor-pointer hover:bg-purple-700 transition"
+                            title="Upload new image"
+                        >
+                            <FiCamera size={16} className="text-white" />
+                        </label>
                     </div>
                 </div>
 
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="w-full sm:w-1/2">
-                            <label htmlFor="fullName" className="block text-sm font-medium text-gray-600 mb-2">Full Name</label>
-                            <input 
-                                type="text" 
-                                id="fullName" 
-                                name="fullName" 
-                                placeholder='John Doe'
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
-                                required
-                            />
-                        </div>
-                        <div className="w-full sm:w-1/2">
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-2">Email Address</label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                name="email" 
-                                placeholder='john@example.com'
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
-                                required
-                            />
-                        </div>
-                    </div>
-
+                <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-600 mb-2">Password</label>
+                        <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className="w-full px-4 py-3 bg-gray-100 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required />
+                    </div>
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com" className="w-full px-4 py-3 bg-gray-100 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required />
+                    </div>
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                         <div className="relative">
-                            <input 
-                                type={showPassword ? 'text' : 'password'} 
-                                id="password" 
-                                name="password" 
-                                value={password}
-                                onChange={handlePasswordChange}
-                                placeholder="Min 8 Characters" 
-                                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
-                                required
-                            />
-                            <button 
-                                type="button" 
-                                onClick={() => setShowPassword(!showPassword)} 
-                                className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-500 hover:text-gray-700"
-                            >
-                                {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                            <input type={showPassword ? 'text' : 'password'} id="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 8 Characters" className="w-full px-4 py-3 bg-gray-100 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required />
+                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-500">
+                                {showPassword ? <FiEyeOff /> : <FiEye />}
                             </button>
                         </div>
                         {formError && <p className="text-red-500 text-xs mt-2">{formError}</p>}
                     </div>
-
-                    <button type="submit" className="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-300 shadow-md">
-                        SIGN UP
+                    <button type="submit" className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-700 transition-colors shadow-lg shadow-purple-200" disabled={isLoading}>
+                        {isLoading ? 'SIGNING UP...' : 'SIGN UP'}
                     </button>
                 </form>
-
-                <p className="mt-8 text-center text-gray-500">
-                    Already have an account? <Link to="/login" className="font-semibold text-purple-600 hover:underline">Login</Link>
+                <p className="mt-8 text-center text-sm text-gray-600">
+                    Already have an account?{' '}
+                    <a href="#" onClick={(e) => { e.preventDefault(); navigate('/login'); }} className="font-semibold text-purple-600 hover:underline">
+                        Login
+                    </a>
                 </p>
             </div>
         </div>
@@ -177,15 +152,15 @@ const SignUpForm = () => {
 
 const DecorativePanel = () => {
     return (
-        <div className="hidden lg:block w-1/2 bg-purple-50 p-12 relative overflow-hidden">
-            <div className="absolute -top-20 -right-20 w-80 h-80 bg-purple-200 rounded-full opacity-50"></div>
-            <div className="absolute -bottom-24 -left-12 w-96 h-96 bg-purple-200 rounded-3xl opacity-50 transform rotate-45"></div>
+        <div className="hidden lg:flex w-1/2 bg-purple-50 p-12 relative items-center justify-center overflow-hidden">
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-purple-200 rounded-full opacity-50"></div>
+            <div className="absolute -bottom-24 -left-12 w-80 h-80 bg-purple-200 rounded-full opacity-50"></div>
             
-            <div className="relative z-10 flex flex-col justify-center h-full space-y-8">
-                <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-auto">
+            <div className="relative z-10 w-full max-w-md space-y-8">
+                <div className="bg-white/70 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-white">
                     <div className="flex items-center space-x-4">
-                        <div className="bg-purple-100 p-3 rounded-xl">
-                            <FiDollarSign size={28} className="text-purple-600" />
+                        <div className="bg-purple-100 p-3 rounded-full">
+                            <FiDollarSign size={24} className="text-purple-600" />
                         </div>
                         <div>
                             <p className="text-gray-500 text-sm">Track Your Income & Expenses</p>
@@ -194,22 +169,22 @@ const DecorativePanel = () => {
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-auto">
+                <div className="bg-white/70 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-white">
                     <div className="flex justify-between items-center mb-4">
                         <div>
-                            <p className="text-lg font-bold">All Transactions</p>
+                            <p className="text-lg font-bold text-gray-800">All Transactions</p>
                             <p className="text-sm text-gray-500">2nd Jan to 21st Dec</p>
                         </div>
                         <a href="#" className="text-sm font-semibold text-purple-600 hover:underline">View More</a>
                     </div>
-                    <div className="flex items-end h-32 space-x-3">
-                        <div className="flex-1 h-16 bg-purple-300 rounded-t-md" title="Jan"></div>
-                        <div className="flex-1 h-24 bg-purple-500 rounded-t-md" title="Feb"></div>
-                        <div className="flex-1 h-28 bg-purple-300 rounded-t-md" title="Mar"></div>
-                        <div className="flex-1 h-12 bg-purple-500 rounded-t-md" title="Apr"></div>
-                        <div className="flex-1 h-20 bg-purple-300 rounded-t-md" title="May"></div>
-                        <div className="flex-1 h-32 bg-purple-500 rounded-t-md" title="Jun"></div>
-                        <div className="flex-1 h-24 bg-purple-300 rounded-t-md" title="Jul"></div>
+                    <div className="flex items-end h-32 space-x-2">
+                        <div className="flex-1 h-[45%] bg-purple-300 rounded-t-md" title="Jan"></div>
+                        <div className="flex-1 h-[65%] bg-purple-500 rounded-t-md" title="Feb"></div>
+                        <div className="flex-1 h-[75%] bg-purple-300 rounded-t-md" title="Mar"></div>
+                        <div className="flex-1 h-[30%] bg-purple-500 rounded-t-md" title="Apr"></div>
+                        <div className="flex-1 h-[55%] bg-purple-300 rounded-t-md" title="May"></div>
+                        <div className="flex-1 h-[90%] bg-purple-500 rounded-t-md" title="Jun"></div>
+                        <div className="flex-1 h-[65%] bg-purple-300 rounded-t-md" title="Jul"></div>
                     </div>
                 </div>
             </div>
