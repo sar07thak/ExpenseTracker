@@ -6,6 +6,7 @@ const cors = require("cors");
 const path = require('path');
 const userRouter = require("../Backend/Routes/userRoutes.js");
 const incomeRouter = require("../Backend/Routes/incomeRoutes.js")
+const expenseRouter = require("../Backend/Routes/expenseRoutes.js");
 
 // --- MIDDLEWARE ---
 // The order is important!
@@ -29,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // --- ROUTES ---
 app.use("/api/user",userRouter);
 app.use("/api/income" , incomeRouter);
+app.use("/api/expense" , expenseRouter);
 
 // --- SERVER START ---
 main().then(() => {

@@ -75,8 +75,20 @@ const getUserInfoController = async (req, res) => {
   }
 };
 
+const logoutController = (req, res) => {
+    try {
+        res.clearCookie('token', { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' });
+        return res.status(200).json({ message: "Logout successful" });
+    } catch (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+
 module.exports = {
     signupController,
     loginController,
-    getUserInfoController
+    getUserInfoController ,
+    logoutController
 };
