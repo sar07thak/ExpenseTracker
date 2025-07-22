@@ -1,12 +1,12 @@
 const express = require('express');
-const { signupController, loginController } = require('../Controller/userAuthController');
+const { signupController, loginController, getUserInfoController } = require('../Controller/userAuthController');
 const userRouter = express.Router();
-const upload = require("../middleware/multer"); // Re-import multer
+const upload = require("../middleware/multer");
+const Protect = require('../middleware/isAuth');
 
 userRouter.post("/login", loginController);
-
-// The signup route now uses the multer middleware to handle the 'avatar' file
 userRouter.post("/signup", upload.single('avatar'), signupController);
+userRouter.get("/getUser", Protect, getUserInfoController);
 
 module.exports = userRouter;
 
