@@ -13,7 +13,7 @@ const Protect = async (req, res, next) => {
 
     // Find the user by the ID stored in the token's payload
     req.user = await User.findById(payload.userId).select('-password');
-
+    console.log("Authenticated User:", req.user); // Log the authenticated user for debugging
     if (!req.user) {
       return res.status(404).json({ message: "User not found." });
     }
