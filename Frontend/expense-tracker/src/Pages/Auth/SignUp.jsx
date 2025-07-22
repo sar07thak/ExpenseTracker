@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 // Import icons from the 'react-icons/fi' (Feather Icons) set
 // Make sure you have run 'npm install react-icons' in your project terminal
-import { FiDollarSign, FiEye, FiEyeOff, FiCamera } from 'react-icons/fi';
+import { FiDollarSign, FiEye, FiEyeOff, FiCamera, FiTrash } from 'react-icons/fi';
 // Import the default user image. Make sure the path is correct for your project structure.
 import user from "../../assets/user.jpeg";
 
@@ -41,6 +41,12 @@ const SignUpForm = () => {
         }
     };
 
+    const handleRemoveAvatar = (e) => {
+        e.preventDefault(); // Stop any other click events
+        setAvatar(null);
+        setAvatarPreview(null);
+    };
+
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent page reload
         
@@ -68,26 +74,37 @@ const SignUpForm = () => {
 
                 {/* --- Image Upload Section --- */}
                 <div className="mb-6">
-                    <label htmlFor="avatarInput" className="cursor-pointer group relative w-28 h-28 block mx-auto">
-                        <div className="w-full h-full rounded-full flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 group-hover:border-purple-400 transition-all overflow-hidden">
+                    <div className="relative w-28 h-28 block mx-auto">
+                        <label htmlFor="avatarInput" className="cursor-pointer group w-full h-full">
+                            <div className="w-full h-full rounded-full flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 group-hover:border-purple-400 transition-all overflow-hidden">
+                                {avatarPreview ? (
+                                    <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <img src={user} alt="Default Avatar" className="w-full h-full object-cover" />
+                                )}
+                            </div>
+                        </label>
+                        <input
+                            type="file"
+                            id="avatarInput"
+                            name="avatar"
+                            accept="image/png, image/jpeg, image/jpg"
+                            onChange={handleAvatarChange}
+                            className="hidden"
+                        />
+                        {/* Conditionally render Camera or Trash icon with appropriate styles */}
+                        <div className={`absolute bottom-0 right-0 rounded-2xl p-2 transition-all shadow-md ${avatarPreview ? 'bg-red-600 hover:bg-red-700' : 'bg-purple-600 hover:bg-purple-700'}`}>
                             {avatarPreview ? (
-                                <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
+                                <button type="button" onClick={handleRemoveAvatar} title="Remove image" >
+                                    <FiTrash size={16} className="text-white" />
+                                </button>
                             ) : (
-                                <img src={user} alt="Default Avatar" className="w-full h-full object-cover" />
+                                <label htmlFor="avatarInput" className="cursor-pointer">
+                                    <FiCamera size={16} className="text-white" />
+                                </label>
                             )}
                         </div>
-                        <div className="absolute bottom-0 right-0 bg-purple-600 rounded-full p-2 group-hover:bg-purple-700 transition-all shadow-md">
-                            <FiCamera size={16} className="text-white" />
-                        </div>
-                    </label>
-                    <input
-                        type="file"
-                        id="avatarInput"
-                        name="avatar"
-                        accept="image/png, image/jpeg, image/jpg"
-                        onChange={handleAvatarChange}
-                        className="hidden"
-                    />
+                    </div>
                 </div>
 
 
