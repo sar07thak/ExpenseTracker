@@ -4,6 +4,7 @@ import { userDataContext } from '../../Context/userContext';
 const Home = () => {
   const {  userData , setUserData } = useContext(userDataContext);
 
+  console.log("User Data:", userData?.user);
 
   return (
     <div>
