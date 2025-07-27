@@ -7,6 +7,7 @@ const path = require('path');
 const userRouter = require("../Backend/Routes/userRoutes.js");
 const incomeRouter = require("../Backend/Routes/incomeRoutes.js")
 const expenseRouter = require("../Backend/Routes/expenseRoutes.js");
+const dashboardRoutes = require("../Backend/Routes/dashBoardRoutes.js");
 
 // --- MIDDLEWARE ---
 // The order is important!
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/api/user",userRouter);
 app.use("/api/income" , incomeRouter);
 app.use("/api/expense" , expenseRouter);
+app.use("/api/dashboard" , dashboardRoutes );
 
 // --- SERVER START ---
 main().then(() => {
