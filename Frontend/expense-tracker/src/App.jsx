@@ -27,13 +27,11 @@ const App = () => {
 }
 
 const Root = () => {
-  const { userData } = useContext(userDataContext);
+  const { userData, loading } = useContext(userDataContext);
 
-  return userData ? (
-    <Navigate to="/dashboard" />
-  ) : (
-    <Navigate to="/login" />
-  )
-}
+  if (loading) return null; // or a spinner
+  return userData ? <Navigate to="/dashboard" /> : <Navigate to="/login" />;
+};
+
 
 export default App;

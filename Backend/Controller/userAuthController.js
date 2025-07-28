@@ -78,6 +78,7 @@ const getUserInfoController = async (req, res) => {
 const logoutController = (req, res) => {
     try {
         res.clearCookie('token', { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' });
+        console.log("Logout cmoplete")
         return res.status(200).json({ message: "Logout successful" });
     } catch (err) {
         console.error("Logout error:", err);

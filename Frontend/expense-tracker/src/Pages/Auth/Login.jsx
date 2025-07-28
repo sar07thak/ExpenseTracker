@@ -7,12 +7,14 @@ import { FiDollarSign, FiEye, FiEyeOff } from 'react-icons/fi';
 import { serverDataContext } from '../../Context/ServerContext';
 import axios from 'axios';
 import toast from 'react-hot-toast'; // Import toast for notifications
+import { userDataContext } from '../../Context/userContext';
 
 // --- UI Components ---
 
 const LoginForm = () => {
     // State to manage form inputs and password visibility
     const { serverUrl } = useContext(serverDataContext);
+    const { setUserData } = useContext(userDataContext);
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -46,7 +48,6 @@ const LoginForm = () => {
 
         // Clear any errors if validation passes
         setFormError(""); 
-        console.log('Logging in with:', { email, password });
         // If validation passes, you can proceed with your authentication logic
         // For example, navigate to the dashboard on successful login
         // navigate('/'); 
@@ -56,6 +57,7 @@ const LoginForm = () => {
                 password
             } , {withCredentials: true  });
             console.log("Login Successful:", response.data);
+            setUserData(response?.data?.user);
             navigate('/');
             toast.success("Login Successful!");
         }catch(error) {
