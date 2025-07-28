@@ -6,10 +6,12 @@ import { serverDataContext } from '../../Context/ServerContext';
 import axios from "axios";
 import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
+import { userDataContext } from '../../Context/userContext';
 
 
 const SignUpForm = () => {
     const { serverUrl } = useContext(serverDataContext);
+    const { setUserData } = useContext(userDataContext)
     const navigate = useNavigate();
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
@@ -49,12 +51,16 @@ const SignUpForm = () => {
             });
 
             console.log("Signup Successful:", response.data);
+
+            // ✅ Set user data into context here
+            setUserData(response.data)
+
             toast.success("Account created successfully! Redirecting...");
-            navigate('/');
+            navigate('/dashboard');
         } catch (error) {
             const errorMessage = error.response?.data?.message || "An unknown error occurred.";
             console.error("Signup failed:", errorMessage);
-            toast.error(`Signup failed: ${errorMessage}`);
+            toast.error(`Signup failed`);
         } finally {
             setIsLoading(false);
         }
