@@ -1,23 +1,27 @@
 import React from 'react';
+import { FiTrendingUp, FiTrendingDown } from "react-icons/fi";
 
 // Helper function to format dates into a more readable format (e.g., "29 Jul 2025")
 const formatDate = (dateString) => {
+  if (!dateString || isNaN(new Date(dateString))) {
+    return 'Invalid Date';
+  }
   const options = { day: 'numeric', month: 'short', year: 'numeric' };
   return new Date(dateString).toLocaleDateString('en-US', options);
 };
 
 // Helper function to format the amount into Indian Rupees (INR)
 const formatCurrency = (amount) => {
+  const numericAmount = typeof amount === 'number' ? amount : 0;
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    minimumFractionDigits: 0, // Optional: hide decimals for whole numbers
-  }).format(amount);
+    minimumFractionDigits: 0,
+  }).format(numericAmount);
 };
 
 const RecentTransaction = ({ recentTransactions }) => {
-  // It's good practice to handle cases where the data might not be available yet
-  if (!recentTransactions || recentTransactions.length === 0) {
+  if (!Array.isArray(recentTransactions) || recentTransactions.length === 0) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h2>
@@ -27,47 +31,52 @@ const RecentTransaction = ({ recentTransactions }) => {
   }
 
   return (
-    // Main card container with white background, padding, rounded corners, and shadow
-    <div className="bg-white p-6 rounded-xl shadow-lg">
-      
-      {/* Header section with title and "See All" link */}
+    <div className="bg-white p-6 rounded-xl shadow-lg hover:-translate-y-1 transition-transform duration-300">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800">Recent Transactions</h2>
         <a href="#" className="text-sm font-semibold text-blue-500 hover:text-blue-700 transition-colors">
           See All →
         </a>
       </div>
-
-      {/* List container: space-y-4 automatically adds margin between each transaction item */}
       <div className="space-y-4">
-        {/* Map over the recentTransactions array to create a row for each item */}
-        {recentTransactions.map((transaction) => (
-          <div key={transaction._id} className="flex items-center justify-between">
-            
-            {/* Left side: Icon, Category, and Date */}
-            <div className="flex items-center">
-              {/* Icon container: A light gray circle */}
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 mr-4">
-                <span className="text-xl">{transaction.icon}</span>
+        {/* Map over all transactions directly */}
+        {recentTransactions.map((transaction, index) => {
+          // Logic from the former TransactionRow component is now inline
+          if (!transaction || typeof transaction !== 'object') {
+            return null; // Don't render anything for invalid data
+          }
+
+          const {
+            _id,
+            icon = '❓',
+            category,
+            source,
+            date,
+            amount = 0,
+          } = transaction;
+
+          const isIncome = !!source;
+          const type = isIncome ? 'income' : 'expense';
+          const displayName = source || category || 'Uncategorized';
+
+          return (
+            <div key={_id || index} className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 mr-4">
+                  <span className="text-xl">{icon}</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-700">{displayName}</p>
+                  <p className="text-sm text-gray-500">{formatDate(date)}</p>
+                </div>
               </div>
-              
-              {/* Category and Date */}
-              <div>
-                <p className="font-semibold text-gray-700">{transaction.category}</p>
-                <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
-              </div>
+              <p className={`font-semibold flex items-center ${type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
+                {type === 'income' ? <FiTrendingUp className="mr-1" /> : <FiTrendingDown className="mr-1" />}
+                {formatCurrency(amount)}
+              </p>
             </div>
-            
-            {/* Right side: Transaction Amount */}
-            <p className={`font-semibold ${
-                // Conditionally set text color to green for income, red for expense
-                transaction.type === 'income' ? 'text-green-500' : 'text-red-500'
-            }`}>
-              {/* Prepend a '+' for income. The negative sign is handled automatically by formatCurrency. */}
-              {transaction.type === 'income' ? `+${formatCurrency(transaction.amount)}` : formatCurrency(transaction.amount)}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
