@@ -12,7 +12,7 @@ const FinancialOverview = ({totalIncome , totalBalance , totalExpenses }) => {
     { name : "Total Income" , amount : totalIncome },
   ]
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg hover:-translate-y-1 transition-transform duration-300">  
+    <div className="bg-white p-6 rounded-xl shadow-xl hover:-translate-y-1 transition-transform duration-300">  
       <div className='flex justify-center items-center'>
         <h5 className='text-xl font-bold text-gray-800'>Financial Overview</h5>
       </div>

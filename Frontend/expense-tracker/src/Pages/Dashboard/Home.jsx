@@ -10,6 +10,8 @@ import RecentTransaction from '../../Components/RecentTransaction'; // Assuming 
 // Import icons for stat cards
 import { FaWallet, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import FinancialOverview from '../../Components/FinancialOverview';
+import ExpenseDashboard from '../../Components/ExpenseDashboard';
+import ExpenseOverview from '../../Components/ExpenseOverview';
 
 const Home = () => {
   const { serverUrl } = useContext(serverDataContext);
@@ -77,7 +79,7 @@ const Home = () => {
           </div>
 
           {/* Main content area with two-column grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="mb-8 grid grid-cols-1 lg:grid-cols-5 gap-6">
             
             {/* Left Column: Recent Transactions (takes up 3/5 of the width on large screens) */}
             <div className="lg:col-span-3">
@@ -92,6 +94,16 @@ const Home = () => {
               totalExpenses={userData?.totalExpenses || 0} />
             </div>
 
+          </div>
+
+          {/* Expenses and last 30 days Expense */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <div className="lg:col-span-2">
+              <ExpenseOverview />
+            </div>
+            <div className="lg:col-span-3">
+              <ExpenseDashboard expenseData={userData?.last30DaysExpenses?.transaction} />
+            </div>
           </div>
         </div>
       )}

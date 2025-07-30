@@ -34,7 +34,7 @@ const RecentTransaction = ({ recentTransactions }) => {
     .slice(0, 5);
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg hover:-translate-y-1 transition-transform duration-300">
+    <div className="bg-white p-6 rounded-xl shadow-xl hover:-translate-y-1 transition-transform duration-300">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800">Recent Transactions</h2>
         <a href="#" className="text-sm font-semibold text-blue-500 hover:text-blue-700 transition-colors">
@@ -42,7 +42,7 @@ const RecentTransaction = ({ recentTransactions }) => {
         </a>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2">
         {limitedTransactions.map((transaction, index) => {
           if (!transaction || typeof transaction !== 'object') return null;
 
@@ -62,7 +62,8 @@ const RecentTransaction = ({ recentTransactions }) => {
             : category || 'Expense';
 
           return (
-            <div key={_id || index} className="flex items-center justify-between">
+            // Added hover effect, padding, and rounded corners to this container
+            <div key={_id || index} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200">
               <div className="flex items-center">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 mr-4">
                   <span className="text-xl">{icon}</span>
@@ -73,7 +74,7 @@ const RecentTransaction = ({ recentTransactions }) => {
                 </div>
               </div>
 
-              <p className={`font-semibold flex items-center ${type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
+              <p className={`flex items-center justify-center font-semibold px-3 py-1 rounded-full ${type === 'income' ? 'text-green-500 bg-green-100' : 'text-red-500 bg-red-100'}`}>
                 {type === 'income' ? (
                   <FiTrendingUp className="mr-1" />
                 ) : (

@@ -32,7 +32,7 @@ const getDashBoardData = async ( req , res ) => {
         const incomeLast60Days = last60DaysIncomeTransactions.reduce( ( sum , transaction ) => sum + transaction.amount , 0 );
 
         // get expense transaction in the last 30 days
-        const last30DaysExpenseTransactions = await Income.find({
+        const last30DaysExpenseTransactions = await Expense.find({
             userId ,
             date : { $gte : new Date(Date.now() - 30*24*60*60*1000)}
         }).sort({ data : -1 })
