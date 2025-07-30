@@ -46,10 +46,10 @@ const Home = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       {userData && (
-        <div className="p-8 bg-gray-50 min-h-screen"> 
+        <div className="p-8 bg-gray-50 h-[calc(100vh-4rem)] overflow-y-auto"> 
           {/* Top Stat Cards */}
           <div className="mt-4 mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Balance, Income, Expense cards go here... */}
@@ -86,7 +86,10 @@ const Home = () => {
 
             {/* Right Column: Financial Overview (takes up 2/5 of the width on large screens) */}
             <div className="lg:col-span-2">
-              <FinancialOverview />
+              <FinancialOverview 
+              totalIncome = {userData?.totalIncome || 0} 
+              totalBalance={userData?.totalBalance || 0 } 
+              totalExpenses={userData?.totalExpenses || 0} />
             </div>
 
           </div>

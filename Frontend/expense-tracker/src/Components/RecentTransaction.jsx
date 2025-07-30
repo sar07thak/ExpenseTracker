@@ -1,16 +1,14 @@
 import React from 'react';
 import { FiTrendingUp, FiTrendingDown } from "react-icons/fi";
 
-// Helper function to format dates into a more readable format (e.g., "29 Jul 2025")
+// Format date like "29 Jul 2025"
 const formatDate = (dateString) => {
-  if (!dateString || isNaN(new Date(dateString))) {
-    return 'Invalid Date';
-  }
+  if (!dateString || isNaN(new Date(dateString))) return 'Invalid Date';
   const options = { day: 'numeric', month: 'short', year: 'numeric' };
   return new Date(dateString).toLocaleDateString('en-US', options);
 };
 
-// Helper function to format the amount into Indian Rupees (INR)
+// Format number to INR currency
 const formatCurrency = (amount) => {
   const numericAmount = typeof amount === 'number' ? amount : 0;
   return new Intl.NumberFormat('en-IN', {
@@ -30,6 +28,11 @@ const RecentTransaction = ({ recentTransactions }) => {
     );
   }
 
+  // Sort by createdAt and limit to 5 recent transactions
+  const limitedTransactions = recentTransactions
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5);
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg hover:-translate-y-1 transition-transform duration-300">
       <div className="flex justify-between items-center mb-4">
@@ -38,13 +41,10 @@ const RecentTransaction = ({ recentTransactions }) => {
           See All →
         </a>
       </div>
+
       <div className="space-y-4">
-        {/* Map over all transactions directly */}
-        {recentTransactions.map((transaction, index) => {
-          // Logic from the former TransactionRow component is now inline
-          if (!transaction || typeof transaction !== 'object') {
-            return null; // Don't render anything for invalid data
-          }
+        {limitedTransactions.map((transaction, index) => {
+          if (!transaction || typeof transaction !== 'object') return null;
 
           const {
             _id,
@@ -53,11 +53,13 @@ const RecentTransaction = ({ recentTransactions }) => {
             source,
             date,
             amount = 0,
+            type: transactionType,
           } = transaction;
 
-          const isIncome = !!source;
-          const type = isIncome ? 'income' : 'expense';
-          const displayName = source || category || 'Uncategorized';
+          const type = transactionType || (source ? 'income' : 'expense');
+          const displayName = type === 'income'
+            ? source || 'Income'
+            : category || 'Expense';
 
           return (
             <div key={_id || index} className="flex items-center justify-between">
@@ -70,8 +72,13 @@ const RecentTransaction = ({ recentTransactions }) => {
                   <p className="text-sm text-gray-500">{formatDate(date)}</p>
                 </div>
               </div>
+
               <p className={`font-semibold flex items-center ${type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
-                {type === 'income' ? <FiTrendingUp className="mr-1" /> : <FiTrendingDown className="mr-1" />}
+                {type === 'income' ? (
+                  <FiTrendingUp className="mr-1" />
+                ) : (
+                  <FiTrendingDown className="mr-1" />
+                )}
                 {formatCurrency(amount)}
               </p>
             </div>
