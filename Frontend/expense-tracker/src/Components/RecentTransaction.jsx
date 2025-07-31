@@ -28,11 +28,7 @@ const RecentTransaction = ({ recentTransactions }) => {
     );
   }
 
-  // Sort by createdAt and limit to 5 recent transactions
-  const limitedTransactions = recentTransactions
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 5);
-
+  // Backend already sends the latest 5 sorted, so we don’t need to sort or slice again
   return (
     <div className="bg-white p-6 rounded-xl shadow-xl hover:-translate-y-1 transition-transform duration-300">
       <div className="flex justify-between items-center mb-4">
@@ -43,7 +39,7 @@ const RecentTransaction = ({ recentTransactions }) => {
       </div>
 
       <div className="space-y-2">
-        {limitedTransactions.map((transaction, index) => {
+        {recentTransactions.map((transaction, index) => {
           if (!transaction || typeof transaction !== 'object') return null;
 
           const {
@@ -62,7 +58,6 @@ const RecentTransaction = ({ recentTransactions }) => {
             : category || 'Expense';
 
           return (
-            // Added hover effect, padding, and rounded corners to this container
             <div key={_id || index} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200">
               <div className="flex items-center">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 mr-4">

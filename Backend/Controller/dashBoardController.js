@@ -60,7 +60,7 @@ const getDashBoardData = async (req, res) => {
         total: expenseLast30Days,
         transaction: last30DaysExpenseTransactions,
       },
-      last30DaysIncome: {
+      last60DaysIncome: {
         total: incomeLast60Days,
         transaction: last60DaysIncomeTransactions,
       },

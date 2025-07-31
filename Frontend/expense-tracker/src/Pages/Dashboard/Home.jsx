@@ -11,6 +11,8 @@ import ExpenseOverview from '../../Components/ExpenseOverview';
 
 // Import icons for stat cards
 import { FaWallet, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import IncomeDashboard from '../../Components/IncomeDashboard';
+import IncomeOverview from '../../Components/IncomeOverview';
 
 const Home = () => {
   const { serverUrl } = useContext(serverDataContext);
@@ -32,6 +34,7 @@ const Home = () => {
   const handleUserData = async () => {
     try {
       const response = await axios.get(`${serverUrl}/api/dashboard/`, { withCredentials: true });
+      console.log(response.data)
       setUserData(response.data);
     } catch (err) {
       console.error("Data can not be fetched", err);
@@ -130,13 +133,23 @@ const Home = () => {
         </div>
 
         {/* Expenses and last 30 days Expense */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-5 gap-6">
           <div className="lg:col-span-2">
-            <ExpenseOverview />
+            <ExpenseOverview expenseData={userData?.last30DaysExpenses?.transaction || [] } />
           </div>
           <div className="lg:col-span-3">
             {/* Use optional chaining and a fallback to prevent crashes */}
             <ExpenseDashboard expenseData={userData?.last30DaysExpenses?.transaction || []} />
+          </div>
+        </div>
+
+        {/* last 60 days income and income */}
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-5 gap-6" >
+          <div className="lg:col-span-3">
+            <IncomeDashboard incomeData={userData?.last60DaysIncome?.transaction || [] } />
+          </div>
+          <div className="lg:col-span-2">
+            <IncomeOverview incomeData={userData?.last60DaysIncome?.transaction || [] } totalIncome={userData?.totalIncome || 0} />  
           </div>
         </div>
 
