@@ -1,17 +1,18 @@
+// /pages/SignUp.jsx
+
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiDollarSign, FiEye, FiEyeOff, FiCamera, FiTrash } from 'react-icons/fi';
-import user from "../../assets/user.jpeg";
+import { FiDollarSign, FiEye, FiEyeOff, FiCamera } from 'react-icons/fi';
+import user from "../../assets/user.jpeg"; // Default user image
 import { serverDataContext } from '../../Context/ServerContext';
 import axios from "axios";
 import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
 import { userDataContext } from '../../Context/userContext';
 
-
 const SignUpForm = () => {
     const { serverUrl } = useContext(serverDataContext);
-    const { setUserData } = useContext(userDataContext)
+    const { setUserData } = useContext(userDataContext);
     const navigate = useNavigate();
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
@@ -49,18 +50,20 @@ const SignUpForm = () => {
             const response = await axios.post(`${serverUrl}/api/user/signup`, formData, {
                  withCredentials: true
             });
-
-            console.log("Signup Successful:", response.data);
-
-            // ✅ Set user data into context here
-            setUserData(response.data)
-
+            
             toast.success("Account created successfully! Redirecting...");
+
+            // ✅ CRITICAL: Set user data into context BEFORE navigating
+            setUserData(response.data.user);
+
+            // Navigate to dashboard after context is set
             navigate('/dashboard');
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || "An unknown error occurred.";
             console.error("Signup failed:", errorMessage);
-            toast.error(`Signup failed`);
+            toast.error(errorMessage);
+            setFormError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -73,23 +76,16 @@ const SignUpForm = () => {
         const options = { maxSizeMB: 1, maxWidthOrHeight: 800, useWebWorker: true };
         toast.loading('Compressing image...');
         try {
-          const compressedFile = await imageCompression(file, options);
-          setAvatar(compressedFile); 
-          setAvatarPreview(URL.createObjectURL(compressedFile));
-          toast.dismiss();
-          toast.success('Image ready!');
+            const compressedFile = await imageCompression(file, options);
+            setAvatar(compressedFile); 
+            setAvatarPreview(URL.createObjectURL(compressedFile));
+            toast.dismiss();
+            toast.success('Image ready!');
         } catch (error) {
-          console.error("Image compression error:", error);
-          toast.dismiss();
-          toast.error("Failed to process image.");
+            console.error("Image compression error:", error);
+            toast.dismiss();
+            toast.error("Failed to process image.");
         }
-    };
-
-    const handleRemoveAvatar = (e) => {
-        e.preventDefault();
-        setAvatar(null);
-        setAvatarPreview(null);
-        document.getElementById('avatarInput').value = "";
     };
 
     return (
@@ -147,9 +143,9 @@ const SignUpForm = () => {
                 </form>
                 <p className="mt-8 text-center text-sm text-gray-600">
                     Already have an account?{' '}
-                    <a href="#" onClick={(e) => { e.preventDefault(); navigate('/login'); }} className="font-semibold text-purple-600 hover:underline">
+                    <Link to="/login" className="font-semibold text-purple-600 hover:underline">
                         Login
-                    </a>
+                    </Link>
                 </p>
             </div>
         </div>

@@ -1,8 +1,9 @@
+// /pages/Login.jsx
+
 import React, { useContext, useState } from 'react';
 // Import Link for internal navigation and useNavigate for programmatic navigation
 import { Link, useNavigate } from 'react-router-dom';
 // Import icons from the 'react-icons/fi' (Feather Icons) set
-// Make sure you have run 'npm install react-icons' in your project terminal
 import { FiDollarSign, FiEye, FiEyeOff } from 'react-icons/fi';
 import { serverDataContext } from '../../Context/ServerContext';
 import axios from 'axios';
@@ -20,49 +21,34 @@ const LoginForm = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [formError, setFormError] = useState(""); // State for form errors
-
-    // Regular expression for strong password validation
-    // Requires: 8+ characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
-    const strongPasswordRegex = new RegExp(
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
-    );
-
-    const handlePasswordChange = (e) => {
-        const newPassword = e.target.value;
-        setPassword(newPassword);
-        // If an error is currently displayed, check if the new password is valid
-        // and clear the error message if it is.
-        if (formError && strongPasswordRegex.test(newPassword)) {
-            setFormError("");
-        }
-    };
+    const [isLoading, setIsLoading] = useState(false); // Loading state for submit button
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent page reload
-        
-        // Final validation check on submit
-        if (!strongPasswordRegex.test(password)) {
-            setFormError("Password must be 8+ characters and include an uppercase letter, a number, and a special character (@$!%*?&).");
-            return; // Stop the submission
-        }
-
-        // Clear any errors if validation passes
+        setIsLoading(true);
         setFormError(""); 
-        // If validation passes, you can proceed with your authentication logic
-        // For example, navigate to the dashboard on successful login
-        // navigate('/'); 
+
         try{
             const response = await axios.post(`${serverUrl}/api/user/login`, {
                 email,
                 password
             } , {withCredentials: true  });
-            console.log("Login Successful:", response.data);
-            setUserData(response?.data?.user);
-            navigate('/');
+            
             toast.success("Login Successful!");
-        }catch(error) {
-            console.error("Login failed:", error.response?.data || error.message);
-            toast.error("Login failed");
+
+            // ✅ CRITICAL: Set user data into context BEFORE navigating
+            setUserData(response?.data?.user);
+            
+            // Navigate to dashboard after context is set
+            navigate('/dashboard');
+
+        } catch(error) {
+            const errorMessage = error.response?.data?.message || "Login failed. Please check your credentials.";
+            console.error("Login failed:", errorMessage);
+            toast.error(errorMessage);
+            setFormError(errorMessage);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -97,8 +83,8 @@ const LoginForm = () => {
                                 id="password" 
                                 name="password" 
                                 value={password}
-                                onChange={handlePasswordChange}
-                                placeholder="Min 8 Characters" 
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password" 
                                 className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
                                 required
                             />
@@ -110,12 +96,11 @@ const LoginForm = () => {
                                 {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
                             </button>
                         </div>
-                        {/* Display error message if it exists */}
                         {formError && <p className="text-red-500 text-xs mt-2">{formError}</p>}
                     </div>
 
-                    <button type="submit" className="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-300 shadow-md">
-                        LOGIN
+                    <button type="submit" className="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-300 shadow-md disabled:bg-purple-400" disabled={isLoading}>
+                        {isLoading ? 'LOGGING IN...' : 'LOGIN'}
                     </button>
                 </form>
 
@@ -175,8 +160,6 @@ const DecorativePanel = () => {
 
 
 // --- Main Login Page Component ---
-// This is the component to export for your Login page.
-// It assumes a CSS file or global style is setting the 'Inter' font.
 export default function Login() {
     return (
         <main className="flex min-h-screen bg-white text-gray-800" style={{ fontFamily: "'Inter', sans-serif" }}>
