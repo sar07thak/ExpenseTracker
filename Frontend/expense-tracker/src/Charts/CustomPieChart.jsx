@@ -36,8 +36,20 @@ const CustomPieChart = ({
           ))}
         </Pie>
         <Tooltip />
-        <Legend />
 
+        {/* ✅ Custom Legend */}
+        <Legend
+          iconType="circle"
+          layout="horizontal"
+          verticalAlign="bottom"
+          align="center"
+          wrapperStyle={{
+            fontSize: '15px', // smaller text
+            marginTop: '20px',
+          }}
+        />
+
+        {/* ✅ Center Text */}
         {showTextAnchor && (
           <>
             <text

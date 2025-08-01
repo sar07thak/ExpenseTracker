@@ -1,55 +1,45 @@
+// src/Charts/CustomBarChart.jsx
+
 import React from 'react';
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
+  Legend,
+  CartesianGrid,
 } from 'recharts';
 
 const CustomBarChart = ({ data }) => {
-  const getBarColor = (index) => (index % 2 === 0 ? '#875cf5' : '#cfbefb');
+  if (!data || data.length === 0) return null;
 
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className='bg-white shadow-md rounded-lg p-2 border border-gray-300'>
-          <p className='text-xs font-semibold text-purple-800 mb-1'>
-            {payload[0].payload.category}
-          </p>
-          <p className='text-sm text-gray-600'>
-            Amount:{' '}
-            <span className='text-sm font-medium text-gray-900'>
-              ₹{payload[0].payload.amount}
-            </span>
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+  // Determine the key dynamically (amount is common, but xKey differs)
+  const xKey = data[0].month ? 'month' : data[0].category ? 'category' : 'label';
 
   return (
-    <div className='bg-white mt-6'>
-      <ResponsiveContainer width='100%' height={325}>
-        <BarChart data={data}>
-          <CartesianGrid stroke='none' />
-          <XAxis dataKey='category' tick={{ fontSize: 12, fill: '#555' }} stroke='none' />
-          <YAxis tick={{ fontSize: 12, fill: '#555' }} stroke='none' />
+    <ResponsiveContainer width="100%" height={350}>
+      <BarChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey={xKey} />
+        <YAxis />
+        <Tooltip />
 
-          <Tooltip content={<CustomTooltip />} />
+        {/* ✅ Custom Legend with smaller text */}
+        <Legend
+          iconType="circle"
+          verticalAlign="bottom"
+          align="center"
+          wrapperStyle={{
+            fontSize: '12px', // smaller text
+            paddingTop: '10px',
+          }}
+        />
 
-          <Bar dataKey='amount' radius={[10, 10, 0, 0]}>
-            {data.map((entry, index) => (
-              <Cell key={index} fill={getBarColor(index)} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+        <Bar dataKey="amount" name="Income Amount" fill="#a855f7" />
+      </BarChart>
+    </ResponsiveContainer>
   );
 };
 
