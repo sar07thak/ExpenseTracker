@@ -25,7 +25,7 @@ const IncomePageOverview = ({ transaction, onAddIncome }) => {
   }, [transaction]);
 
   return (
-    <div className="p-4">
+    <div className="bg-gray-50 shadow-md rounded-xl p-4 ">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Income Overview</h2>
         <button

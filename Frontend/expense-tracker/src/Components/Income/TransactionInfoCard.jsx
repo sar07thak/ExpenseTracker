@@ -1,10 +1,12 @@
+
 import React from 'react';
 import { FaRegTrashAlt } from "react-icons/fa";
-import { FiTrendingUp } from 'react-icons/fi';
+import { FiTrendingUp, FiTrendingDown } from 'react-icons/fi';
 
 const TransactionInfoCard = ({ title, icon, date, amount, type, onDelete }) => {
   return (
-    <div className="group flex items-center justify-between px-3 py-2 bg-white   rounded-lg  hover:bg-gray-200 transition-all duration-200">
+    // Using the user-provided styles with cleaned up class names
+    <div className="group flex items-center justify-between px-3 py-2 bg-white rounded-lg hover:bg-gray-100 transition-all duration-200">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-full text-xl">
           <span>{icon}</span>
@@ -15,7 +17,8 @@ const TransactionInfoCard = ({ title, icon, date, amount, type, onDelete }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 ml-2">
+      {/* ✅ Increased gap from 2 to 4 for better spacing */}
+      <div className="flex items-center gap-4 ml-2">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -29,11 +32,12 @@ const TransactionInfoCard = ({ title, icon, date, amount, type, onDelete }) => {
 
         <div className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md border ${
           type === 'income' 
-            ? 'text-green-700 bg-green-100' 
-            : 'text-red-700 bg-red-100'
+            ? 'text-green-700 bg-green-100 border-green-200' // Added matching border color
+            : 'text-red-700 bg-red-100 border-red-200'     // Added matching border color
         }`}>
           <span>{type === 'income' ? `+ $${amount.toLocaleString()}` : `- $${amount.toLocaleString()}`}</span>
-          <FiTrendingUp size={12} />
+          {/* Using a different icon for expenses for better clarity */}
+          {type === 'income' ? <FiTrendingUp size={12} /> : <FiTrendingDown size={12} />}
         </div>
       </div>
     </div>

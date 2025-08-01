@@ -98,7 +98,7 @@ const Income = () => {
     <div className='min-h-screen bg-white'>
       <Navbar />
       <div className='p-6 md:p-10 bg-gray-100 h-[calc(100vh-4rem)] overflow-y-auto'>
-        <div className="max-w-5xl mx-auto space-y-8">
+        <div className="max-w-7xl mx-auto space-y-8">
           {/* ✅ Overview & Bar Chart */}
           <IncomePageOverview
             transaction={incomeData}
