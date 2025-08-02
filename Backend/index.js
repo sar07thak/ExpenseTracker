@@ -12,11 +12,10 @@ const dashboardRoutes = require("../Backend/Routes/dashBoardRoutes.js");
 // --- MIDDLEWARE ---
 // The order is important!
 const allowedOrigins = [
-  "https://expensetracker-frontpart.onrender.com",
-  "http://localhost:5173"
+  "http://localhost:5173",                                  // Local dev frontend
+  "https://expensetracker-front-rpp5.onrender.com"         // Your deployed frontend
 ];
 
-// 1. Enable CORS for your frontend
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -27,6 +26,7 @@ app.use(cors({
   },
   credentials: true
 }));
+
 
 // 2. Parse cookies
 app.use(cookieParser());
