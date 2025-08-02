@@ -5,7 +5,7 @@ import { createContext } from 'react'
 export const serverDataContext = createContext();
 
 const ServerContext = ({children}) => {
-  const serverUrl = "http://localhost:3000";
+  const serverUrl = "https://expensetracker-m38v.onrender.com";
     return (
     <>
     <serverDataContext.Provider value={{serverUrl}}>
