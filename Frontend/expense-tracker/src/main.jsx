@@ -6,8 +6,7 @@ import App from './App.jsx';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import ServerContext from './Context/ServerContext.jsx';
-// ✅ FIXED: Corrected the import path
-import UserContext from './Context/UserContext.jsx';
+import UserContext from './Context/userContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
