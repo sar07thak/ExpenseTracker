@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaTimes, FaBars } from "react-icons/fa";
 import SideMenu from './SideMenu';
-import { userDataContext } from '../Context/userContext';
+import { userDataContext } from '../Context/UserContext';
 import { serverDataContext } from '../Context/ServerContext';
 
 // Main Navbar Component

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom'; // Import useLocation
 import { FaTimes, FaHome, FaMoneyBillWave, FaWallet, FaSignInAlt, FaSignOutAlt } from 'react-icons/fa'; // Import icons
-import { userDataContext } from '../Context/userContext';
+import { userDataContext } from '../Context/UserContext';
 import axios from 'axios';
 import toast from 'react-hot-toast'; // Import toast for notifications
 import { serverDataContext } from '../Context/ServerContext';

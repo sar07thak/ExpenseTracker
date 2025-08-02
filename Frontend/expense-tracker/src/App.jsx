@@ -7,7 +7,7 @@ import Expense from "./Pages/Dashboard/Expense.jsx";
 import Income from "./Pages/Dashboard/Income.jsx";
 import toast, { Toaster } from 'react-hot-toast';
 import { useContext } from 'react'
-import { userDataContext } from './Context/userContext.jsx'
+import { userDataContext } from './Context/UserContext.jsx'
 
 const App = () => {
   return (

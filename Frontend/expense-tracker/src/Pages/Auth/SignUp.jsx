@@ -8,7 +8,7 @@ import { serverDataContext } from '../../Context/ServerContext';
 import axios from "axios";
 import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
-import { userDataContext } from '../../Context/userContext';
+import { userDataContext } from '../../Context/UserContext';
 
 const SignUpForm = () => {
     const { serverUrl } = useContext(serverDataContext);

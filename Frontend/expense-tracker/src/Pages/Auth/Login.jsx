@@ -8,7 +8,7 @@ import { FiDollarSign, FiEye, FiEyeOff } from 'react-icons/fi';
 import { serverDataContext } from '../../Context/ServerContext';
 import axios from 'axios';
 import toast from 'react-hot-toast'; // Import toast for notifications
-import { userDataContext } from '../../Context/userContext';
+import { userDataContext } from "../../Context/UserContext";
 
 // --- UI Components ---
 
