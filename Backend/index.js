@@ -13,7 +13,7 @@ const dashboardRoutes = require("../Backend/Routes/dashBoardRoutes.js");
 // The order is important!
 
 // 1. Enable CORS for your frontend
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: "https://expensetracker-frontpart.onrender.com", credentials: true }));
 
 // 2. Parse cookies
 app.use(cookieParser());
