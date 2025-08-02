@@ -1,5 +1,3 @@
-// /pages/SignUp.jsx
-
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiDollarSign, FiEye, FiEyeOff, FiCamera } from 'react-icons/fi';
@@ -25,8 +23,8 @@ const SignUpForm = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
-            setFormError("Password must be 8+ characters and include an uppercase letter, a number, and a special character.");
+        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/.test(password)) {
+            setFormError("Password must be 8+ characters and include an uppercase letter, a number, and a special character (@ $ ! % * ? & #).");
             return;
         }
         setFormError("");
@@ -48,15 +46,11 @@ const SignUpForm = () => {
             }
 
             const response = await axios.post(`${serverUrl}/api/user/signup`, formData, {
-                 withCredentials: true
+                withCredentials: true
             });
-            
+
             toast.success("Account created successfully! Redirecting...");
-
-            // ✅ CRITICAL: Set user data into context BEFORE navigating
             setUserData(response.data.user);
-
-            // Navigate to dashboard after context is set
             navigate('/dashboard');
 
         } catch (error) {
@@ -68,7 +62,7 @@ const SignUpForm = () => {
             setIsLoading(false);
         }
     };
-    
+
     const handleAvatarChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -77,7 +71,7 @@ const SignUpForm = () => {
         toast.loading('Compressing image...');
         try {
             const compressedFile = await imageCompression(file, options);
-            setAvatar(compressedFile); 
+            setAvatar(compressedFile);
             setAvatarPreview(URL.createObjectURL(compressedFile));
             toast.dismiss();
             toast.success('Image ready!');
@@ -92,7 +86,7 @@ const SignUpForm = () => {
         <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12">
             <div className="w-full max-w-md">
                 <h1 className="text-2xl font-bold mb-8 self-start text-gray-800">Expense Tracker</h1>
-                
+
                 <div className="mb-6 text-left">
                     <h2 className="text-3xl font-bold text-gray-900">Create an Account</h2>
                     <p className="text-gray-500 mt-2">Join us today by entering your details below.</p>
@@ -101,15 +95,15 @@ const SignUpForm = () => {
                 <div className="mb-8">
                     <div className="relative w-24 h-24 mx-auto">
                         <label htmlFor="avatarInput" className="cursor-pointer group">
-                            <img 
-                                src={avatarPreview || user} 
-                                alt="Avatar" 
+                            <img
+                                src={avatarPreview || user}
+                                alt="Avatar"
                                 className="w-full h-full rounded-full object-cover border-2 border-gray-200 group-hover:border-purple-400 transition"
                             />
                         </label>
                         <input type="file" id="avatarInput" onChange={handleAvatarChange} className="hidden" accept="image/*" />
-                        <label 
-                            htmlFor="avatarInput" 
+                        <label
+                            htmlFor="avatarInput"
                             className="absolute bottom-0 right-0 bg-purple-600 rounded-full p-2 cursor-pointer hover:bg-purple-700 transition"
                             title="Upload new image"
                         >
@@ -157,7 +151,7 @@ const DecorativePanel = () => {
         <div className="hidden lg:flex w-1/2 bg-purple-50 p-12 relative items-center justify-center overflow-hidden">
             <div className="absolute -top-24 -right-24 w-72 h-72 bg-purple-200 rounded-full opacity-50"></div>
             <div className="absolute -bottom-24 -left-12 w-80 h-80 bg-purple-200 rounded-full opacity-50"></div>
-            
+
             <div className="relative z-10 w-full max-w-md space-y-8">
                 <div className="bg-white/70 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-white">
                     <div className="flex items-center space-x-4">
@@ -194,8 +188,6 @@ const DecorativePanel = () => {
     );
 };
 
-
-// --- Main SignUp Page Component ---
 export default function SignUp() {
     return (
         <main className="flex min-h-screen bg-white text-gray-800" style={{ fontFamily: "'Inter', sans-serif" }}>
