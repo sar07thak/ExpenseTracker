@@ -35,7 +35,7 @@ const TransactionInfoCard = ({ title, icon, date, amount, type, onDelete }) => {
             ? 'text-green-700 bg-green-100 border-green-200' // Added matching border color
             : 'text-red-700 bg-red-100 border-red-200'     // Added matching border color
         }`}>
-          <span>{type === 'income' ? `+ $${amount.toLocaleString()}` : `- $${amount.toLocaleString()}`}</span>
+          <span>{type === 'income' ? `+ ₹${amount.toLocaleString()}` : `- ₹${amount.toLocaleString()}`}</span>
           {/* Using a different icon for expenses for better clarity */}
           {type === 'income' ? <FiTrendingUp size={12} /> : <FiTrendingDown size={12} />}
         </div>
